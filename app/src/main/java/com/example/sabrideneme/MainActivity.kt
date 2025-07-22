@@ -201,7 +201,7 @@ private fun ProfileCard(userProfile: UserProfile) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier.size(64.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary)
+                modifier = Modifier.size(120.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary)
             )
             Spacer(Modifier.width(16.dp))
             Column {
