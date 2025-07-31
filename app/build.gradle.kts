@@ -56,4 +56,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("com.google.accompanist:accompanist-placeholder-material3:0.34.0")
+
+    implementation("androidx.compose.foundation:foundation-placeholder:1.7.0-alpha02")
 }

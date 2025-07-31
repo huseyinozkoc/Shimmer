@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +28,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.example.sabrideneme.ui.theme.SabriDenemeTheme
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material3.placeholder
+import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,6 +163,12 @@ fun MainScreen() {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        item {
+            //Shimmer trying
+            ShimmerExampleScreen()
+
+        }
+
         // Örnek 1: Dinamik boyutlu profil kartı
         item {
             Text("Dinamik Boyutlu Kart Örneği", style = MaterialTheme.typography.titleLarge)
@@ -261,3 +288,176 @@ fun ActualArticleItem(index: Int) {
         }
     }
 }
+
+
+
+@Composable
+fun ShimmerExampleScreen() {
+    // 2. Create a state to control the shimmer visibility
+    var isLoading by remember { mutableStateOf(true) }
+
+    // This simulates a network request or data loading
+    LaunchedEffect(key1 = Unit) {
+        delay(7000) // Wait for 3 seconds
+        isLoading = false // Data is "loaded", so turn off the shimmer
+    }
+
+    // Your LazyColumn where the items are displayed
+    LazyColumn(
+        contentPadding = PaddingValues(all = 16.dp)
+    ) {
+        // We'll show 7 shimmering items
+        items(7) {
+            // Your Text composable with the corrected placeholder
+            Text(
+                text = "Dinamik Boyutlu Kart Örneği",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    // 3. Apply the placeholder modifier correctly
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        // The color and shape are often handled by the Material theme,
+                        // but you can customize them if needed.
+                         color = Color.LightGray,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.size(26.dp))
+        }
+
+        item {
+            // Your Text composable with the corrected placeholder
+            BasicText(
+            text = "ADASDKASJHDASKDASHDASK \n IDHASKDHASKDHASKHFALSHJDFAKSLHDKAHSDKASHDKASHDKASHDKASDHKASDHAKSHDKAS",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                // 3. Apply the placeholder modifier correctly
+                .placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = Color.LightGray,
+                    shape = RoundedCornerShape(16.dp)
+                )
+        )
+        }
+    }
+}
+
+
+/**
+ * Belirtilen satır sayısına göre yükleme placeholder'ı çizen bir Modifier.
+ *
+ * @param isLoading Placeholder'ın gösterilip gösterilmeyeceği.
+ * @param lineCount Çizilecek placeholder satır sayısı.
+ * @param shape Placeholder kutularının şekli.
+ * @param color Placeholder rengi (brush verilmezse kullanılır).
+ * @param brush Placeholder'ı boyamak için kullanılacak fırça (örneğin Shimmer efekti için).
+ * @param lineSpacing Satırlar arasındaki boşluk.
+ * @param lineHeight Her bir satırın yüksekliği.
+ */
+fun Modifier.loadingPlaceholder(
+    isLoading: Boolean,
+    lineCount: Int,
+    shape: Shape = RoundedCornerShape(8.dp), // Shape artık burada direkt kullanılmıyor ama parametre olarak kalabilir.
+    color: Color = Color.Gray,
+    brush: Brush? = null,
+    lineSpacing: Dp = 8.dp,
+    lineHeight: Dp = 16.dp
+): Modifier = this.then(
+    if (isLoading && lineCount > 0) {
+        drawWithContent {
+            // Önceki içeriği çizmiyoruz, çünkü placeholder'ı onun yerine çiziyoruz.
+            // drawContent() // Eğer içeriğin arkasına çizmek isterseniz bu satırı açın.
+
+            val lineHeightPx = lineHeight.toPx()
+            val lineSpacingPx = lineSpacing.toPx()
+            // shape parametresinden köşe yuvarlaklığını almak daha esnek olur.
+            // Bu örnekte sabit 8.dp kullanıyoruz.
+            val cornerRadiusPx = 8.dp.toPx()
+
+            val brushToUse = brush ?: SolidColor(color)
+
+            // Hesaplanan satır sayısı kadar placeholder çiz
+            for (i in 0 until lineCount) {
+                val topY = i * (lineHeightPx + lineSpacingPx)
+
+                // Son satırı biraz daha kısa yapalım (daha gerçekçi bir görünüm için)
+                val lineWidth = if (i == lineCount - 1 && lineCount > 1) {
+                    size.width * 0.75f
+                } else {
+                    size.width
+                }
+
+                drawRoundRect(
+                    brush = brushToUse,
+                    topLeft = Offset(0f, topY),
+                    size = Size(lineWidth, lineHeightPx),
+                    cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
+                )
+            }
+        }
+    } else {
+        // isLoading false ise veya lineCount 0 ise hiçbir şey yapma
+        this
+    }
+)
+
+/**
+ * Yükleme durumunda, verilen metnin kaplayacağı alan kadar placeholder gösteren bir Text Composable.
+ *
+ * @param text Gösterilecek veya placeholder'ı hesaplanacak metin.
+ * @param isLoading Yükleme durumunu belirtir. True ise placeholder gösterilir.
+ * @param modifier Bu Composable'a uygulanacak standart Modifier.
+ * @param placeholderBrush Placeholder için kullanılacak Brush (Shimmer efekti için ideal).
+ * @param placeholderColor Placeholder rengi (brush verilmezse kullanılır).
+ * @param style Metnin stili. Placeholder'ın yüksekliği bu stilden alınır.
+ * // Diğer Text parametrelerini de buraya ekleyebilirsiniz (color, fontSize, fontWeight vb.)
+ */
+@Composable
+fun PlaceholderText(
+    text: String,
+    isLoading: Boolean,
+    modifier: Modifier = Modifier,
+    placeholderBrush: Brush? = null,
+    placeholderColor: Color = Color.Gray,
+    style: TextStyle = LocalTextStyle.current
+) {
+    // Metnin yerleşimi tamamlandığında satır sayısını tutacak state
+    var lineCount by remember { mutableStateOf(0) }
+    // Metnin yerleşiminin en az bir kere yapıldığını anlamak için bir flag
+    var isLayoutDone by remember { mutableStateOf(false) }
+
+    // Placeholder için kullanılacak modifier'ı hazırlayalım
+    val placeholderModifier = modifier.loadingPlaceholder(
+        isLoading = isLoading && isLayoutDone, // Placeholder'ı sadece yükleniyorsa VE yerleşim bittiyse göster
+        lineCount = lineCount,
+        brush = placeholderBrush,
+        color = placeholderColor,
+        // Satır yüksekliğini metnin kendi font boyutundan almak daha doğru sonuç verir
+        lineHeight = style.fontSize.value.dp
+    )
+
+    Text(
+        text = text,
+        modifier = placeholderModifier,
+        // isLoading true ise metni görünmez yap, ama yerleşimi hesaplanabilsin diye Composable ağacında kalsın.
+        color = if (isLoading) Color.Transparent else LocalContentColor.current,
+        style = style,
+        onTextLayout = { textLayoutResult: TextLayoutResult ->
+            // Sadece ilk yerleşimde veya metin değiştiğinde güncelleme yapmak
+            // ve gereksiz recomposition'ları önlemek için kontrol
+            if (!isLayoutDone || lineCount != textLayoutResult.lineCount) {
+                lineCount = textLayoutResult.lineCount
+                isLayoutDone = true
+            }
+        }
+    )
+}
+
+

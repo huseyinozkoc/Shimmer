@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +21,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.dp
+
 
 @Composable
 fun RoundedInvestmentCard(
@@ -141,12 +154,32 @@ fun RoundedCardPreview3() {
 @Preview(name = "Rounded Card - Investment")
 @Composable
 fun RoundedCardPreview4() {
-    RoundedInvestmentCard(
-        title = "ALL INVESTMENTS",
-        description = "This is where your investment activity will appear and will change every aspect of your.",
-        linkText = "Get Started",
-        backgroundColor = CardWhite,
-        contentColor = TextOnLight,
-        iconContainerColor = Color.Gray.copy(alpha = 0.1f)
-    )
+    TextLineCountExample()
+}
+
+
+
+@Composable
+fun TextLineCountExample() {
+
+    var lineCount by remember { mutableIntStateOf(0) }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+
+
+        Text(
+            text = "Bu, Jetpack Compose'da satır sayısını nasıl alacağımızı gösteren " +
+                    "oldukça uzun bir metindir. Metin genişliğe göre birden fazla " +
+                    "satıra bölünecektir.",
+            onTextLayout = { textLayoutResult: TextLayoutResult ->
+
+                lineCount = textLayoutResult.lineCount
+            }
+        )
+
+        Text(
+            text = "Yukarıdaki metin $lineCount satırdan oluşuyor.",
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
 }
