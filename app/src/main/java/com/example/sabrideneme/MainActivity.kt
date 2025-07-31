@@ -3,6 +3,8 @@ package com.example.sabrideneme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -460,4 +462,24 @@ fun PlaceholderText(
     )
 }
 
+val shimmerColors = listOf(
+    Color.LightGray.copy(alpha = 0.8f),
+    Color.LightGray.copy(alpha = 0.4f),
+    Color.LightGray.copy(alpha = 0.8f)
+)
 
+val transition = rememberInfiniteTransition()
+val translateAnim = transition.animateFloat(
+    initialValue = 0f,
+    targetValue = 1000f,
+    animationSpec = infiniteRepeatable(
+        animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+        repeatMode = RepeatMode.Restart
+    )
+)
+
+val brush = Brush.linearGradient(
+    colors = shimmerColors,
+    start = Offset.Zero,
+    end = Offset(x = translateAnim.value, y = translateAnim.value)
+)
