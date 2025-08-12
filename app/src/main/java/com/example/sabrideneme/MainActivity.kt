@@ -30,9 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.example.sabrideneme.ui.theme.SabriDenemeTheme
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material3.placeholder
-import com.google.accompanist.placeholder.material3.shimmer
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -165,11 +162,7 @@ fun MainScreen() {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        item {
-            //Shimmer trying
-            ShimmerExampleScreen()
 
-        }
 
         // Örnek 1: Dinamik boyutlu profil kartı
         item {
@@ -293,63 +286,9 @@ fun ActualArticleItem(index: Int) {
 
 
 
-@Composable
-fun ShimmerExampleScreen() {
-    // 2. Create a state to control the shimmer visibility
-    var isLoading by remember { mutableStateOf(true) }
 
-    // This simulates a network request or data loading
-    LaunchedEffect(key1 = Unit) {
-        delay(7000) // Wait for 3 seconds
-        isLoading = false // Data is "loaded", so turn off the shimmer
-    }
 
-    // Your LazyColumn where the items are displayed
-    LazyColumn(
-        contentPadding = PaddingValues(all = 16.dp)
-    ) {
-        // We'll show 7 shimmering items
-        items(7) {
-            // Your Text composable with the corrected placeholder
-            Text(
-                text = "Dinamik Boyutlu Kart Örneği",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    // 3. Apply the placeholder modifier correctly
-                    .placeholder(
-                        visible = isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        // The color and shape are often handled by the Material theme,
-                        // but you can customize them if needed.
-                         color = Color.LightGray,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-            )
-        }
 
-        item {
-            Spacer(modifier = Modifier.size(26.dp))
-        }
-
-        item {
-            // Your Text composable with the corrected placeholder
-            BasicText(
-            text = "ADASDKASJHDASKDASHDASK \n IDHASKDHASKDHASKHFALSHJDFAKSLHDKAHSDKASHDKASHDKASHDKASDHKASDHAKSHDKAS",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                // 3. Apply the placeholder modifier correctly
-                .placeholder(
-                    visible = isLoading,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(16.dp)
-                )
-        )
-        }
-    }
-}
 
 
 /**
@@ -462,24 +401,3 @@ fun PlaceholderText(
     )
 }
 
-val shimmerColors = listOf(
-    Color.LightGray.copy(alpha = 0.8f),
-    Color.LightGray.copy(alpha = 0.4f),
-    Color.LightGray.copy(alpha = 0.8f)
-)
-
-val transition = rememberInfiniteTransition()
-val translateAnim = transition.animateFloat(
-    initialValue = 0f,
-    targetValue = 1000f,
-    animationSpec = infiniteRepeatable(
-        animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
-        repeatMode = RepeatMode.Restart
-    )
-)
-
-val brush = Brush.linearGradient(
-    colors = shimmerColors,
-    start = Offset.Zero,
-    end = Offset(x = translateAnim.value, y = translateAnim.value)
-)
